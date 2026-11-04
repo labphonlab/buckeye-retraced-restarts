@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this code or these measurements, please cite them as below, together with the Buckeye Corpus."
+title: "Retraced same-word restarts in the Buckeye Corpus: analysis code and measurements"
+type: software
+authors:
+  - family-names: Ishihara
+    given-names: Takeshi
+    affiliation: Mejiro University
+license: MIT
+repository-code: "https://github.com/labphonlab/buckeye-retraced-restarts"
+keywords:
+  - self-repair
+  - restart
+  - disfluency
+  - Buckeye Corpus
+  - equivalence testing

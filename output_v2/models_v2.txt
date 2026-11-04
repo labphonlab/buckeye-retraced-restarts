@@ -1,0 +1,329 @@
+=== 12_models_v2.R ===
+Event tokens (dur): 528 514  complete pairs: 506  fluent: 8016 
+
+
+--- DUR all event tokens ---
+log_dur ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 | word) + (1 | event_id)
+<environment: 0x9e104c8c8>
+                Estimate Std. Error  df t value Pr(>|t|)
+(Intercept)      -1.8656     0.0346  81 -53.850 3.36e-65
+conditionrepeat   0.0172     0.0217 498   0.794 4.28e-01
+log_freq_c       -0.3349     0.0323 124 -10.370 1.66e-18
+rate_syl_c       -0.0610     0.0129 593  -4.720 2.95e-06
+utt_pos1          0.0437     0.1013 953   0.431 6.66e-01
+prev_pause1       0.1017     0.0361 979   2.819 4.91e-03
+ Groups   Name        Std.Dev.
+ event_id (Intercept) 0.15809 
+ word     (Intercept) 0.18837 
+ speaker  (Intercept) 0.00000 
+ Residual             0.34794 
+singular: TRUE 
+
+--- DUR complete pairs ---
+log_dur ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 | word) + (1 | event_id)
+<environment: 0x9dfd45578>
+                Estimate Std. Error    df t value Pr(>|t|)
+(Intercept)      -1.8579     0.0339  77.6 -54.820 8.29e-64
+conditionrepeat   0.0134     0.0218 487.6   0.616 5.38e-01
+log_freq_c       -0.3324     0.0316 118.8 -10.524 1.06e-18
+rate_syl_c       -0.0595     0.0131 570.5  -4.549 6.59e-06
+utt_pos1          0.0426     0.1004 932.7   0.424 6.72e-01
+prev_pause1       0.0912     0.0361 953.6   2.530 1.16e-02
+ Groups   Name        Std.Dev.
+ event_id (Intercept) 0.15677 
+ word     (Intercept) 0.18118 
+ speaker  (Intercept) 0.00000 
+ Residual             0.34499 
+singular: TRUE 
+
+DUR repeat-first (all tokens)                    conditionrepeat    b=  0.017 SE= 0.022 df= 497.7 t=  0.79 p=0.428 95%CI[-0.025, 0.060] 90%CI[-0.019, 0.053] TOST p=0.0002
+DUR repeat-first (complete pairs)                conditionrepeat    b=  0.013 SE= 0.022 df= 487.6 t=  0.62 p=0.538 95%CI[-0.029, 0.056] 90%CI[-0.022, 0.049] TOST p=0.0001
+DUR repeat-first (submitted model spec)          conditionrepeat    b=  0.023 SE= 0.023 df= 894.3 t=  0.96 p=0.337 95%CI[-0.024, 0.069] 90%CI[-0.016, 0.061] TOST p=0.0010
+DUR repeat-first (SUBTLEX frequency)             conditionrepeat    b=  0.017 SE= 0.022 df= 497.4 t=  0.77 p=0.440 95%CI[-0.026, 0.059] 90%CI[-0.019, 0.053] TOST p=0.0002
+DUR frequency (all tokens)                       log_freq_c         b= -0.335 SE= 0.032 df= 123.5 t=-10.37 p=0.000 95%CI[-0.399,-0.271] 90%CI[-0.388,-0.281] TOST p=-
+DUR speech rate (all tokens)                     rate_syl_c         b= -0.061 SE= 0.013 df= 592.8 t= -4.72 p=0.000 95%CI[-0.086,-0.036] 90%CI[-0.082,-0.040] TOST p=-
+
+--- INT all event tokens ---
+int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 | word) + (1 | event_id)
+<environment: 0x9db1c89a8>
+                Estimate Std. Error    df t value Pr(>|t|)
+(Intercept)       0.8747      0.425  56.8   2.058   0.0442
+conditionrepeat  -0.3735      0.184 512.6  -2.035   0.0424
+log_freq_c       -0.6937      0.460 129.2  -1.507   0.1344
+rate_syl_c        0.0547      0.194 922.4   0.281   0.7784
+utt_pos1         -0.7128      1.001 646.0  -0.712   0.4767
+prev_pause1      -0.3088      0.364 670.7  -0.848   0.3967
+ Groups   Name        Std.Dev.
+ event_id (Intercept) 4.8410  
+ word     (Intercept) 1.9021  
+ speaker  (Intercept) 0.0000  
+ Residual             2.9030  
+singular: TRUE 
+
+--- INT complete pairs ---
+int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 | word) + (1 | event_id)
+<environment: 0x9e93698f8>
+                Estimate Std. Error    df t value Pr(>|t|)
+(Intercept)        0.994      0.420  57.3   2.367   0.0213
+conditionrepeat   -0.409      0.184 504.0  -2.220   0.0269
+log_freq_c        -0.590      0.457 128.6  -1.292   0.1986
+rate_syl_c         0.123      0.199 897.8   0.617   0.5373
+utt_pos1          -0.745      1.003 641.3  -0.743   0.4578
+prev_pause1       -0.296      0.366 658.2  -0.808   0.4192
+ Groups   Name        Std.Dev.  
+ event_id (Intercept) 4.8799e+00
+ word     (Intercept) 1.8094e+00
+ speaker  (Intercept) 5.8872e-08
+ Residual             2.9059e+00
+singular: TRUE 
+
+--- INT + log duration ---
+int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    log_dur_c + (1 | speaker) + (1 | word) + (1 | event_id)
+<environment: 0x9e6303268>
+                Estimate Std. Error    df t value Pr(>|t|)
+(Intercept)       0.8450      0.427  57.2   1.980   0.0525
+conditionrepeat  -0.3764      0.184 511.5  -2.049   0.0410
+log_freq_c       -0.6072      0.475 148.0  -1.278   0.2032
+rate_syl_c        0.0457      0.195 898.4   0.235   0.8145
+utt_pos1         -0.7075      1.002 645.4  -0.706   0.4802
+prev_pause1      -0.3354      0.366 670.0  -0.916   0.3600
+log_dur_c         0.2461      0.337 813.5   0.729   0.4661
+ Groups   Name        Std.Dev.
+ event_id (Intercept) 4.8403  
+ word     (Intercept) 1.8984  
+ speaker  (Intercept) 0.0000  
+ Residual             2.9048  
+singular: TRUE 
+
+--- PEAK-VOWEL INT ---
+intv_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 | word) + (1 | event_id)
+<environment: 0x9de6846d0>
+                Estimate Std. Error    df t value Pr(>|t|)
+(Intercept)       0.9256      0.395  43.6   2.345  0.02367
+conditionrepeat  -0.3246      0.215 390.4  -1.512  0.13140
+log_freq_c       -1.3422      0.435  96.4  -3.086  0.00265
+rate_syl_c        0.1840      0.208 773.9   0.884  0.37672
+utt_pos1         -1.0885      1.138 470.6  -0.956  0.33948
+prev_pause1       0.0704      0.416 564.6   0.169  0.86553
+ Groups   Name        Std.Dev.  
+ event_id (Intercept) 4.8564e+00
+ word     (Intercept) 1.5053e+00
+ speaker  (Intercept) 1.7073e-08
+ Residual             2.9620e+00
+singular: TRUE 
+
+INT repeat-first (all tokens)                    conditionrepeat    b= -0.373 SE= 0.184 df= 512.6 t= -2.03 p=0.042 95%CI[-0.734,-0.013] 90%CI[-0.676,-0.071] TOST p=0.0003
+INT repeat-first (complete pairs)                conditionrepeat    b= -0.409 SE= 0.184 df= 504.0 t= -2.22 p=0.027 95%CI[-0.772,-0.047] 90%CI[-0.713,-0.105] TOST p=0.0007
+INT repeat-first (+log duration)                 conditionrepeat    b= -0.376 SE= 0.184 df= 511.5 t= -2.05 p=0.041 95%CI[-0.737,-0.015] 90%CI[-0.679,-0.074] TOST p=0.0004
+VOWEL INT repeat-first                           conditionrepeat    b= -0.325 SE= 0.215 df= 390.4 t= -1.51 p=0.131 95%CI[-0.747, 0.098] 90%CI[-0.679, 0.029] TOST p=0.0009
+
+--- F0 availability, beta-binomial (token-level) ---
+                Estimate Std. Error z value Pr(>|z|)
+(Intercept)       1.3903     0.1718   8.092 5.86e-16
+conditionrepeat  -0.2449     0.0709  -3.456 5.49e-04
+log_freq_c        0.1313     0.1255   1.046 2.95e-01
+rate_syl_c        0.0258     0.0547   0.472 6.37e-01
+utt_pos1         -0.3699     0.3153  -1.173 2.41e-01
+prev_pause1      -0.4271     0.1221  -3.499 4.67e-04
+attr(,"ddf")
+[1] "asymptotic"
+Mean F0 availability:
+ first repeat 
+ 0.729  0.698 
+
+--- DUR fluent/first/repeat ---
+log_dur ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + ((1 | word) + (0 + condition | word))
+<environment: 0x9e00e2ac0>
+                Estimate Std. Error     df t value Pr(>|t|)
+(Intercept)      -1.9044    0.03775  124.3  -50.44 1.25e-84
+conditionfirst    0.1009    0.02020   44.2    4.99 9.72e-06
+conditionrepeat   0.1032    0.02198   59.0    4.70 1.63e-05
+log_freq_c       -0.3119    0.03155  113.8   -9.89 5.19e-17
+rate_syl_c       -0.0621    0.00447 6361.1  -13.90 2.65e-43
+utt_pos1          0.3431    0.03916 8982.2    8.76 2.32e-18
+prev_pause1       0.0535    0.01591 8948.2    3.36 7.74e-04
+ Groups   Name            Std.Dev. Corr        
+ word     conditionfluent 0.240300             
+          conditionfirst  0.202164 0.977       
+          conditionrepeat 0.145826 0.999 0.985 
+ word.1   (Intercept)     0.133426             
+ speaker  (Intercept)     0.062381             
+ Residual                 0.379212             
+singular: FALSE 
+
+--- INT fluent/first/repeat ---
+int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 | word)
+<environment: 0x9dcccc158>
+                Estimate Std. Error     df t value Pr(>|t|)
+(Intercept)      -0.3372     0.2736   66.8 -1.2323 2.22e-01
+conditionfirst    1.2205     0.2499 8993.9  4.8845 1.05e-06
+conditionrepeat   0.9352     0.2528 8997.8  3.6989 2.18e-04
+log_freq_c       -0.9496     0.3125  158.2 -3.0390 2.78e-03
+rate_syl_c       -0.0380     0.0608 1186.5 -0.6258 5.32e-01
+utt_pos1         -1.8656     0.5584 8997.9 -3.3406 8.39e-04
+prev_pause1       0.0101     0.2275 8923.0  0.0443 9.65e-01
+ Groups   Name        Std.Dev.
+ word     (Intercept) 1.79274 
+ speaker  (Intercept) 0.29399 
+ Residual             5.47114 
+singular: FALSE 
+
+--- INT fluent/first/repeat + log duration ---
+int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    log_dur_c + (1 | speaker) + (1 | word)
+<environment: 0x9e220e698>
+                Estimate Std. Error   df t value Pr(>|t|)
+(Intercept)      -0.3608     0.2760   67 -1.3075 1.96e-01
+conditionfirst    1.1729     0.2504 8997  4.6832 2.87e-06
+conditionrepeat   0.8791     0.2537 9001  3.4656 5.31e-04
+log_freq_c       -0.8217     0.3178  166 -2.5855 1.06e-02
+rate_syl_c       -0.0115     0.0617 1424 -0.1858 8.53e-01
+utt_pos1         -2.0030     0.5608 9003 -3.5714 3.57e-04
+prev_pause1      -0.0102     0.2276 8920 -0.0449 9.64e-01
+log_dur_c         0.3824     0.1485 8063  2.5755 1.00e-02
+ Groups   Name        Std.Dev.
+ word     (Intercept) 1.80803 
+ speaker  (Intercept) 0.30312 
+ Residual             5.46878 
+singular: FALSE 
+
+--- F0 availability fluent/first/repeat ---
+                Estimate Std. Error z value Pr(>|z|)
+(Intercept)       1.1849     0.1597   7.421 1.16e-13
+conditionfirst    0.0252     0.0626   0.403 6.87e-01
+conditionrepeat  -0.2125     0.0613  -3.470 5.21e-04
+log_freq_c        0.0891     0.1160   0.768 4.42e-01
+rate_syl_c        0.0410     0.0166   2.464 1.37e-02
+utt_pos1         -0.1701     0.1287  -1.322 1.86e-01
+prev_pause1      -0.5022     0.0539  -9.324 1.12e-20
+attr(,"ddf")
+[1] "asymptotic"
+
+DUR vs fluent: conditionfirst                    conditionfirst     b=  0.101 SE= 0.020 df=  44.2 t=  4.99 p=0.000 95%CI[ 0.060, 0.142] 90%CI[ 0.067, 0.135] TOST p=-
+INT vs fluent: conditionfirst                    conditionfirst     b=  1.220 SE= 0.250 df=8993.9 t=  4.88 p=0.000 95%CI[ 0.731, 1.710] 90%CI[ 0.809, 1.631] TOST p=-
+INT(+dur) vs fluent: conditionfirst              conditionfirst     b=  1.173 SE= 0.250 df=8997.2 t=  4.68 p=0.000 95%CI[ 0.682, 1.664] 90%CI[ 0.761, 1.585] TOST p=-
+DUR vs fluent: conditionrepeat                   conditionrepeat    b=  0.103 SE= 0.022 df=  59.0 t=  4.70 p=0.000 95%CI[ 0.059, 0.147] 90%CI[ 0.066, 0.140] TOST p=-
+INT vs fluent: conditionrepeat                   conditionrepeat    b=  0.935 SE= 0.253 df=8997.8 t=  3.70 p=0.000 95%CI[ 0.440, 1.431] 90%CI[ 0.519, 1.351] TOST p=-
+INT(+dur) vs fluent: conditionrepeat             conditionrepeat    b=  0.879 SE= 0.254 df=9000.9 t=  3.47 p=0.001 95%CI[ 0.382, 1.376] 90%CI[ 0.462, 1.296] TOST p=-
+
+--- EXPLORATORY: repeat-first log-duration difference ~ event variables ---
+d_dur ~ gap_log + frag_c + retrace_multi + editing + (1 | speaker) + 
+    (1 | word)
+              Estimate Std. Error    df t value Pr(>|t|)
+(Intercept)     0.0713     0.0333  72.1   2.142  0.03560
+gap_log         0.0115     0.0244 453.5   0.472  0.63685
+frag_c          0.2654     0.2289 470.9   1.159  0.24690
+retrace_multi  -0.0750     0.0616 456.2  -1.217  0.22436
+editing        -0.1976     0.0617 500.7  -3.205  0.00143
+ Groups   Name        Std.Dev.
+ word     (Intercept) 0.064123
+ speaker  (Intercept) 0.052642
+ Residual             0.463820
+singular: FALSE 
+
+--- EXPLORATORY: repeat-first intensity difference ~ event variables ---
+d_int ~ gap_log + frag_c + retrace_multi + editing + (1 | speaker) + 
+    (1 | word)
+              Estimate Std. Error    df t value Pr(>|t|)
+(Intercept)     -0.264      0.317  56.6  -0.833    0.409
+gap_log         -0.104      0.214 495.1  -0.485    0.628
+frag_c          -2.499      1.994 490.6  -1.253    0.211
+retrace_multi   -0.247      0.529 438.3  -0.467    0.640
+editing          0.468      0.532 496.6   0.879    0.380
+ Groups   Name        Std.Dev.
+ word     (Intercept) 0.29865 
+ speaker  (Intercept) 1.05685 
+ Residual             3.97257 
+singular: FALSE 
+
+MOD dur: gap_log                                 gap_log            b=  0.012 SE= 0.024 df= 453.5 t=  0.47 p=0.637 95%CI[-0.036, 0.059] 90%CI[-0.029, 0.052] TOST p=-
+MOD int: gap_log                                 gap_log            b= -0.104 SE= 0.214 df= 495.1 t= -0.49 p=0.628 95%CI[-0.524, 0.316] 90%CI[-0.456, 0.249] TOST p=-
+MOD dur: frag_c                                  frag_c             b=  0.265 SE= 0.229 df= 470.9 t=  1.16 p=0.247 95%CI[-0.184, 0.715] 90%CI[-0.112, 0.643] TOST p=-
+MOD int: frag_c                                  frag_c             b= -2.499 SE= 1.994 df= 490.6 t= -1.25 p=0.211 95%CI[-6.417, 1.420] 90%CI[-5.785, 0.788] TOST p=-
+MOD dur: retrace_multi                           retrace_multi      b= -0.075 SE= 0.062 df= 456.2 t= -1.22 p=0.224 95%CI[-0.196, 0.046] 90%CI[-0.177, 0.027] TOST p=-
+MOD int: retrace_multi                           retrace_multi      b= -0.247 SE= 0.529 df= 438.3 t= -0.47 p=0.640 95%CI[-1.287, 0.792] 90%CI[-1.119, 0.625] TOST p=-
+MOD dur: editing                                 editing            b= -0.198 SE= 0.062 df= 500.7 t= -3.21 p=0.001 95%CI[-0.319,-0.076] 90%CI[-0.299,-0.096] TOST p=-
+MOD int: editing                                 editing            b=  0.468 SE= 0.532 df= 496.6 t=  0.88 p=0.380 95%CI[-0.578, 1.514] 90%CI[-0.410, 1.345] TOST p=-
+
+--- LRT interactions (duration) ---
+Data: et
+Models:
+m0: log_dur ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + (1 | speaker) + (1 | word) + (1 | event_id)
+update(m0, . ~ . + condition:rate_syl_c): log_dur ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + (1 | speaker) + (1 | word) + (1 | event_id) + condition:rate_syl_c
+                                         npar    AIC    BIC  logLik -2*log(L)
+m0                                         10 1039.5 1089.0 -509.74    1019.5
+update(m0, . ~ . + condition:rate_syl_c)   11 1041.4 1095.8 -509.69    1019.4
+                                          Chisq Df Pr(>Chisq)
+m0                                                           
+update(m0, . ~ . + condition:rate_syl_c) 0.1004  1     0.7513
+Data: et
+Models:
+m0: log_dur ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + (1 | speaker) + (1 | word) + (1 | event_id)
+update(m0, . ~ . + condition:prev_pause): log_dur ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + (1 | speaker) + (1 | word) + (1 | event_id) + condition:prev_pause
+                                         npar    AIC    BIC  logLik -2*log(L)
+m0                                         10 1039.5 1089.0 -509.74    1019.5
+update(m0, . ~ . + condition:prev_pause)   11 1035.9 1090.3 -506.94    1013.9
+                                          Chisq Df Pr(>Chisq)  
+m0                                                             
+update(m0, . ~ . + condition:prev_pause) 5.5918  1    0.01804 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+--- LRT interactions (intensity) ---
+Data: eti
+Models:
+mi0: int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + (1 | speaker) + (1 | word) + (1 | event_id)
+update(mi0, . ~ . + condition:rate_syl_c): int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + (1 | speaker) + (1 | word) + (1 | event_id) + condition:rate_syl_c
+                                          npar    AIC    BIC  logLik -2*log(L)
+mi0                                         10 6212.1 6261.6 -3096.1    6192.1
+update(mi0, . ~ . + condition:rate_syl_c)   11 6212.9 6267.4 -3095.5    6190.9
+                                           Chisq Df Pr(>Chisq)
+mi0                                                           
+update(mi0, . ~ . + condition:rate_syl_c) 1.1677  1     0.2799
+Data: eti
+Models:
+mi0: int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + (1 | speaker) + (1 | word) + (1 | event_id)
+update(mi0, . ~ . + condition:prev_pause): int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + (1 | speaker) + (1 | word) + (1 | event_id) + condition:prev_pause
+                                          npar    AIC    BIC  logLik -2*log(L)
+mi0                                         10 6212.1 6261.6 -3096.1    6192.1
+update(mi0, . ~ . + condition:prev_pause)   11 6213.3 6267.7 -3095.6    6191.3
+                                          Chisq Df Pr(>Chisq)
+mi0                                                          
+update(mi0, . ~ . + condition:prev_pause)  0.83  1     0.3623
+
+--- Descriptives ---
+       condition n_dur dur_mean dur_sd logdur_mean logdur_sd n_int int_mean
+first      first   528      174   95.0       -1.87     0.498   527    1.344
+fluent    fluent  8016      150   83.5       -2.02     0.496  8014   -0.162
+repeat    repeat   514      178   95.2       -1.85     0.500   513    1.150
+       int_sd f0_mean f0_sd prev_pause utt_final
+first    6.05   0.729 0.286     0.1420   0.02462
+fluent   5.69   0.724 0.305     0.0666   0.01148
+repeat   6.07   0.698 0.273     0.1206   0.00389
+
+Paired (complete pairs): repeat/first ratio = 1.009 ; prop repeat shorter = 0.514 ; mean int diff = -0.38 ; prop repeat louder = 0.446 
+Event variables:
+  cut_frag_dur    gap_cut_to_repeat sil_after_cut    
+ Min.   :0.0300   Min.   :0.0000    Min.   :0.00000  
+ 1st Qu.:0.1070   1st Qu.:0.0000    1st Qu.:0.00000  
+ Median :0.1499   Median :0.1370    Median :0.00000  
+ Mean   :0.1754   Mean   :0.2757    Mean   :0.05653  
+ 3rd Qu.:0.2239   3rd Qu.:0.3682    3rd Qu.:0.02885  
+ Max.   :0.6317   Max.   :4.7010    Max.   :1.63896  
+retrace_len
+  1   2   3   4 
+442  82  14   4 
+n_between_lex
+  0   1   2   3   4 
+324 119  62  24  13 
+editing_material
+FALSE  TRUE 
+  404   138 
