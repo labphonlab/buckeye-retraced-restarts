@@ -51,12 +51,12 @@ def pct(x):
     return 100 * (np.exp(x) - 1)
 
 rows = [  # (panel, y-label, estimate label, transform, CI columns)
-    ("dur", "Repeat − first", "DUR repeat-first (all tokens)", "90"),
-    ("dur", "First − fluent", "DUR vs fluent: conditionfirst", "95"),
-    ("dur", "Repeat − fluent", "DUR vs fluent: conditionrepeat", "95"),
-    ("int", "Repeat − first", "INT repeat-first (all tokens)", "90"),
-    ("int", "First − fluent", "INT vs fluent: conditionfirst", "95"),
-    ("int", "Repeat − fluent", "INT vs fluent: conditionrepeat", "95"),
+    ("dur", "R − F", "DUR repeat-first (all tokens)", "90"),
+    ("dur", "F − fluent", "DUR vs fluent: conditionfirst", "95"),
+    ("dur", "R − fluent", "DUR vs fluent: conditionrepeat", "95"),
+    ("int", "R − F", "INT repeat-first (all tokens)", "90"),
+    ("int", "F − fluent", "INT vs fluent: conditionfirst", "95"),
+    ("int", "R − fluent", "INT vs fluent: conditionrepeat", "95"),
 ]
 fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.8), constrained_layout=True, sharey=True)
 spec = {"dur": ("Difference in word duration (%)", pct, 10.0, "A. Duration"),
@@ -64,7 +64,9 @@ spec = {"dur": ("Difference in word duration (%)", pct, 10.0, "A. Duration"),
 for ax, key in zip(axes, ["dur", "int"]):
     xlabel, f, sesoi, title = spec[key]
     sub = [r for r in rows if r[0] == key]
-    ax.axvspan(-sesoi, sesoi, color=GRID, alpha=0.6, lw=0)
+    top = len(sub) - 1  # 同等性域は R − F の行にだけ適用する
+    ax.fill_between([-sesoi, sesoi], top - 0.38, top + 0.38, color=GRID, alpha=0.6, lw=0)
+    ax.axhline(top - 0.5, color=GRID, lw=1, ls="--")
     ax.axvline(0, color=MUTED, lw=1)
     for i, (_, lab, el, ci) in enumerate(sub):
         e = est.loc[el]
@@ -75,7 +77,7 @@ for ax, key in zip(axes, ["dur", "int"]):
         ax.plot(b, yy, marker=marker, ms=8, color=INK if i else "white", mec=INK, mew=1.5)
     ax.set_yticks(range(len(sub))); ax.set_yticklabels([r[1] for r in sub][::-1])
     ax.set_xlabel(xlabel); ax.set_title(title, loc="left", fontsize=10, fontweight="bold")
-    ax.text(-sesoi + 0.02 * sesoi, len(sub) - 0.45, f"equivalence bounds ±{sesoi:g}", ha="left", fontsize=8, color=MUTED)
+    ax.text(-sesoi + 0.02 * sesoi, top + 0.46, f"equivalence bounds ±{sesoi:g}", ha="left", fontsize=8, color=MUTED)
     ax.set_ylim(-0.6, len(sub) - 0.2)
     ax.grid(axis="x", color=GRID, lw=0.5)
 fig.savefig(os.path.join(OUT, "Figure2_estimates.png"), dpi=300)
