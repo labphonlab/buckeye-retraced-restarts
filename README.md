@@ -39,7 +39,7 @@ Rscript scripts/12_models_v2.R
 python3 scripts/13_figures_v2.py
 ```
 
-This reproduces `output_v2/models_v2.txt` and `estimates_v2.csv` (estimates agree with the reported ones to within 1e-7).
+This reproduces `output_v2/models_v2.txt` and `estimates_v2.csv` (estimates agree with the reported ones to within 1e-6).
 
 **Full pipeline (licensed copy of Buckeye required).**
 
@@ -60,7 +60,7 @@ python3 scripts/restore_from_corpus.py --raw raw --data output_v2
 
 Analyses were run with Python 3.14 (pandas 3.0.3, NumPy 2.4.4, Parselmouth 0.4.7 / Praat 6.1.38) and R 4.6.1 (lme4 2.0.6, lmerTest 3.2.1, glmmTMB 1.1.14).
 
-One caveat when re-running: the random-effects structure of each model is chosen automatically (`fit_max()` in `12_models_v2.R`). For the duration model comparing the fluent baseline with the repair tokens, the chosen structure is at the boundary of singularity. Numerically negligible changes to the input (for example, rewriting the CSV with fewer significant digits) can lead to a simpler structure, which changes the first-production and repetition versus fluent duration estimates. Always use the tables as distributed.
+The random-effects structure of each model is selected automatically by `fit_max()` in `12_models_v2.R`, in a fixed order: maximal structure, then without by-speaker slopes, then without correlations among the by-word slopes, then random intercepts only. Models for the comparison with the fluent baseline are also reported with random intercepts only, as a sensitivity analysis (`SENSITIVITY` sections of `models_v2.txt`).
 
 ## Citation
 

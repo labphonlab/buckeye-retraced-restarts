@@ -52,13 +52,18 @@ cat("Event tokens (dur):", table(et$condition), " complete pairs:", length(pair_
     " fluent:", sum(tok$condition == "fluent"), "\n\n")
 
 # --- 変量効果構造の選択（D8）-----------------------------------------
+# 順序: 最大構造 → 話者の傾きを外す → 語の傾きの相関を外す → 切片のみ。
+# 相関なし（||）の項は因子のままだと全水準の列＋切片で過剰パラメータ化されるので、
+# 参照水準以外の数値ダミー列で書く。
 fit_max <- function(fixed, data, slope = "condition", event = TRUE) {
   ev_term <- if (event) " + (1 | event_id)" else ""
+  lv <- levels(data[[slope]])[-1]
+  dums <- paste0("d_", lv)
+  for (i in seq_along(lv)) data[[dums[i]]] <- as.numeric(data[[slope]] == lv[i])
   forms <- c(
     sprintf("%s + (1 + %s | speaker) + (1 + %s | word)%s", fixed, slope, slope, ev_term),
-    sprintf("%s + (1 + %s || speaker) + (1 + %s || word)%s", fixed, slope, slope, ev_term),
-    sprintf("%s + (1 + %s || speaker) + (1 | word)%s", fixed, slope, ev_term),
-    sprintf("%s + (1 | speaker) + (1 + %s || word)%s", fixed, slope, ev_term),
+    sprintf("%s + (1 | speaker) + (1 + %s | word)%s", fixed, slope, ev_term),
+    sprintf("%s + (1 | speaker) + (1 + %s || word)%s", fixed, paste(dums, collapse = " + "), ev_term),
     sprintf("%s + (1 | speaker) + (1 | word)%s", fixed, ev_term))
   for (f in forms) {
     m <- suppressWarnings(suppressMessages(lmer(as.formula(f), data = data, control = ctrl)))
@@ -141,6 +146,15 @@ m3_f0 <- glmmTMB(cbind(f0_k, f0_n - f0_k) ~ condition + log_freq_c + rate_syl_c 
                    (1 | speaker) + (1 | word), data = droplevels(subset(th_i, f0_n > 0)), family = betabinomial)
 cat("\n--- F0 availability fluent/first/repeat ---\n"); print(summary(m3_f0)$coefficients$cond, digits = 3)
 cat("\n")
+m3_dur_ri <- lmer(as.formula(paste("log_dur", FX3, "+ (1 | speaker) + (1 | word)")), three, control = ctrl)
+m3_int_ri <- lmer(as.formula(paste("int_c", FX3, "+ (1 | speaker) + (1 | word)")), th_i, control = ctrl)
+show_model(m3_dur_ri, "SENSITIVITY: DUR fluent/first/repeat, random intercepts only")
+show_model(m3_int_ri, "SENSITIVITY: INT fluent/first/repeat, random intercepts only")
+cat("\n")
+for (tm in c("conditionfirst", "conditionrepeat")) {
+  report(m3_dur_ri, tm, paste("DUR vs fluent (intercepts only):", tm))
+  report(m3_int_ri, tm, paste("INT vs fluent (intercepts only):", tm))
+}
 for (tm in c("conditionfirst", "conditionrepeat")) {
   report(m3_dur, tm, paste("DUR vs fluent:", tm))
   report(m3_int, tm, paste("INT vs fluent:", tm))
