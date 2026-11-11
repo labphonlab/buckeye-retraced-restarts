@@ -1,0 +1,409 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>語頭の付け直し</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* 配置: 1カラムの作業画面。上=進捗と語、中=スペクトログラムと波形（クリックで語頭）、下=状態と移動。
+   16_onset_serve.py から開いたときだけ動く（onset_check/ を読み、結果を onset_check/results.csv に保存）。 */
+:root {
+  --bg: #f2f5f7; --panel: #ffffff; --fg: #1a252e; --muted: #5a6a77; --line: #d3dce3;
+  --accent: #0a6a8c; --accent-fg: #ffffff; --mark: #d0461f; --cursor: #0a6a8c; --hover: rgba(10, 106, 140, 0.45);
+  --spec-lo: #ffffff; --spec-hi: #10181e; --wave: #3b4d5c;
+  --ok: #1d7a4b; --ng: #b13f29; --warn: #9a6400; --focus: #0a6a8c;
+  --font-body: "IBM Plex Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10171c; --panel: #18222a; --fg: #e3eaef; --muted: #8fa0ad; --line: #2b3843;
+    --accent: #4db9da; --accent-fg: #06222c; --mark: #ff8a5c; --cursor: #4db9da; --hover: rgba(77, 185, 218, 0.5);
+    --spec-lo: #18222a; --spec-hi: #f2f6f9; --wave: #9db1c1;
+    --ok: #55c48e; --ng: #f2866e; --warn: #e2b04a; --focus: #4db9da; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10171c; --panel: #18222a; --fg: #e3eaef; --muted: #8fa0ad; --line: #2b3843;
+  --accent: #4db9da; --accent-fg: #06222c; --mark: #ff8a5c; --cursor: #4db9da; --hover: rgba(77, 185, 218, 0.5);
+  --spec-lo: #18222a; --spec-hi: #f2f6f9; --wave: #9db1c1;
+  --ok: #55c48e; --ng: #f2866e; --warn: #e2b04a; --focus: #4db9da; color-scheme: dark;
+}
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px));
+}
+.wrap { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+h1 { font-size: 19px; margin: 0; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; min-width: 0; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+button, input, textarea { font: inherit; color: inherit; }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 4px; padding: 6px 12px; min-height: 36px;
+  display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 500; }
+kbd { font-family: var(--font-mono); font-size: 12px; border: 1px solid var(--line); border-bottom-width: 2px;
+  border-radius: 3px; padding: 0 5px; background: var(--bg); color: var(--muted); line-height: 1.5; }
+.btn.primary kbd { background: transparent; color: inherit; border-color: currentColor; }
+header.top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 16px; }
+.bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.bar > i { display: block; height: 100%; background: var(--accent); width: 0; }
+.ctx { font-size: 22px; line-height: 1.4; overflow-wrap: anywhere; }
+.ctx b { color: var(--mark); font-weight: 700; border-bottom: 2px solid var(--mark); }
+.ctx .side { color: var(--muted); }
+.canvas-wrap { position: relative; width: 100%; user-select: none; touch-action: none; }
+canvas { display: block; width: 100%; cursor: crosshair; border: 1px solid var(--line); border-radius: 4px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.status { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; }
+.status label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+textarea { width: 100%; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); padding: 6px 8px; resize: vertical; }
+.nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; }
+.msg { padding: 8px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); }
+.msg.err { border-color: var(--ng); color: var(--ng); }
+details summary { cursor: pointer; font-weight: 500; }
+details ul { margin: 8px 0 0; padding-left: 20px; }
+.readout { font-size: 13px; }
+@media (max-width: 600px) { .ctx { font-size: 18px; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>語頭の付け直し</h1>
+    <p class="muted mono" id="saveState">読み込み中…</p>
+  </header>
+  <div id="startMsg" class="msg" hidden></div>
+
+  <details class="panel" id="guide">
+    <summary>付け方（最初に一度読んでください）</summary>
+    <ul>
+      <li>赤い語（<b style="color:var(--mark)">この語</b>）の<strong>最初の音の始まり</strong>を、スペクトログラムか波形をクリックして付けます。灰色の語は前後の文脈です。末尾の「-」は途中で切れた断片です。</li>
+      <li>閉鎖音（p t k b d g）で始まる語：直前の音が終わって閉鎖（無音・弱い区間）に入る位置。直前が無音なら破裂の位置。</li>
+      <li>母音・接近音（I, a, we, you など）で始まる語：直前の音からフォルマントや声の質が切り替わる位置。断片の音（例 <span class="mono">ju-</span> の /u/、<span class="mono">s-</span> の /s/）を含めない。</li>
+      <li>摩擦音（s, f, th, sh, h）で始まる語：摩擦ノイズの始まり。直前の断片の摩擦と続いているときは、強さや周波数が変わる位置。</li>
+      <li><kbd>Space</kbd> で付けた位置から最後まで再生し、頭に余計な音が聞こえないか、語頭が欠けていないかを確かめます。<kbd>B</kbd> は付けた位置の直前 250 ms（ここに赤い語の音が入っていなければよい）。</li>
+      <li>位置に自信がなければ「自信なし」、語が聞き取れない・境界が決められないときは「付けられない」を選びます。</li>
+    </ul>
+  </details>
+
+  <section class="panel" id="screen-item" hidden>
+    <div class="row" style="justify-content:space-between">
+      <p class="mono" id="progress">0 / 0</p>
+      <p class="muted mono" id="itemId"></p>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+    <p class="ctx" id="ctx" style="margin-top:12px"></p>
+  </section>
+
+  <section class="panel" id="screen-wave" hidden>
+    <div class="canvas-wrap" id="cw">
+      <canvas id="cv" height="320" aria-label="スペクトログラムと波形。クリックで語頭の位置を付ける"></canvas>
+    </div>
+    <div class="row" style="margin-top:10px; justify-content:space-between">
+      <div class="row">
+        <button class="btn primary" id="pFrom" type="button">付けた位置から再生 <kbd>Space</kbd></button>
+        <button class="btn" id="pBefore" type="button">直前 250 ms <kbd>B</kbd></button>
+        <button class="btn" id="pAll" type="button">全体 <kbd>A</kbd></button>
+      </div>
+      <p class="muted mono readout" id="readout">語頭: 未設定</p>
+    </div>
+    <p class="muted readout" style="margin-top:6px"><kbd>←</kbd><kbd>→</kbd> 5 ms 動かす（<kbd>Shift</kbd> で 1 ms）・<label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="autoplay" checked> 項目を開いたら全体を自動で再生する</label></p>
+  </section>
+
+  <section class="panel" id="screen-judge" hidden>
+    <div class="status">
+      <label><input type="radio" name="st" value="marked"> 付けた <kbd>1</kbd></label>
+      <label><input type="radio" name="st" value="unsure"> 自信なし <kbd>2</kbd></label>
+      <label><input type="radio" name="st" value="cannot"> 付けられない <kbd>3</kbd></label>
+    </div>
+    <label for="note" class="muted" style="font-size:13px; display:block; margin-top:8px">メモ（任意）</label>
+    <textarea id="note" rows="1"></textarea>
+  </section>
+
+  <nav class="nav" id="screen-nav" hidden>
+    <button class="btn" id="prev" type="button">戻る</button>
+    <span class="muted" id="navHint" style="font-size:13px"></span>
+    <button class="btn primary" id="next" type="button">次へ <kbd>Enter</kbd></button>
+  </nav>
+
+  <section class="panel" id="screen-done" hidden>
+    <h1 style="font-size:17px">すべて付け終わりました</h1>
+    <p style="margin-top:8px" id="doneText"></p>
+    <p class="muted" style="margin-top:8px">結果は <span class="mono">onset_check/results.csv</span> に保存済みです。サーバーを Ctrl+C で止めて構いません。</p>
+    <div class="row" style="margin-top:12px"><button class="btn" id="backToFirst" type="button">最初の項目から見直す</button></div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var BASE = "/onset_check/";
+  var S = { items: [], idx: 0, ans: {}, buf: null, bufId: null, reqSeq: 0, spec: null, hoverX: null,
+            ctx: null, src: null, playStart: 0, playFrom: 0, playTo: 0, gestured: false, sending: false, sendAgain: false };
+
+  // ── 小物 ────────────────────────────────────────────
+  function parseCSV(text) {
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+    var rows = [], row = [], f = "", q = false, c;
+    for (var i = 0; i < text.length; i++) {
+      c = text[i];
+      if (q) { if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"') q = true;
+      else if (c === ",") { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(f); f = ""; rows.push(row); row = []; }
+      else f += c;
+    }
+    if (f !== "" || row.length) { row.push(f); rows.push(row); }
+    rows = rows.filter(function (r) { return r.length > 1 || r[0] !== ""; });
+    var head = rows.shift() || [];
+    return rows.map(function (r) { var o = {}; head.forEach(function (h, k) { o[h.trim()] = r[k] == null ? "" : r[k]; }); return o; });
+  }
+  function csvCell(v) { v = String(v == null ? "" : v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function msg(t, err) { var m = $("startMsg"); m.hidden = !t; m.textContent = t || ""; m.className = "msg" + (err ? " err" : ""); }
+  function setSaveState(t, err) { var e = $("saveState"); e.textContent = t; e.style.color = err ? "var(--ng)" : ""; }
+  function isDone(a) { return !!(a && (a.status === "cannot" || ((a.status === "marked" || a.status === "unsure") && a.onset != null))); }
+  function nDone() { return S.items.filter(function (it) { return isDone(S.ans[it.item_id]); }).length; }
+  function firstOpen() { for (var i = 0; i < S.items.length; i++) if (!isDone(S.ans[S.items[i].item_id])) return i; return -1; }
+  function cur() { return S.items[S.idx]; }
+  function curAns() { var id = cur().item_id; if (!S.ans[id]) S.ans[id] = { onset: null, status: "", note: "" }; return S.ans[id]; }
+  function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function rgb(c) { // "#rrggbb" か "rgb(...)" を [r,g,b] に
+    var m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i.exec(c);
+    if (m) return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+    m = /(\d+)\D+(\d+)\D+(\d+)/.exec(c); return m ? [+m[1], +m[2], +m[3]] : [0, 0, 0];
+  }
+
+  // ── 保存（判定のたびに onset_check/results.csv へ。送信は1本ずつ）───────────
+  function resultsCSV() {
+    var out = ["item_id,word,onset_s,status,note,timestamp"];
+    S.items.forEach(function (it) {
+      var a = S.ans[it.item_id];
+      if (!a || (!a.status && a.onset == null && !a.note)) return;
+      out.push([it.item_id, it.word, a.onset == null ? "" : a.onset.toFixed(4), a.status || "", a.note || "", a.ts || ""].map(csvCell).join(","));
+    });
+    return out.join("\n") + "\n";
+  }
+  function save() {
+    var a = S.ans[cur().item_id]; if (a) a.ts = new Date().toISOString();
+    if (S.sending) { S.sendAgain = true; return; }
+    S.sending = true; S.sendAgain = false;
+    fetch(BASE + "results.csv", { method: "POST", headers: { "Content-Type": "text/csv; charset=utf-8" }, body: resultsCSV() })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); setSaveState("ファイルに保存済み " + new Date().toLocaleTimeString(), false); })
+      .catch(function () { setSaveState("ファイルに保存できません（サーバーが止まっていないか確認してください）", true); })
+      .then(function () { S.sending = false; if (S.sendAgain) save(); });
+  }
+
+  // ── 読み込み ────────────────────────────────────────
+  function start() {
+    if (!/^https?:$/.test(location.protocol) || !/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) {
+      msg("このページは python3 scripts/16_onset_serve.py で開いてください。", true); setSaveState("", false); return;
+    }
+    Promise.all([
+      fetch(BASE + "items.csv", { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }),
+      fetch(BASE + "results.csv", { cache: "no-store" }).then(function (r) { return r.ok ? r.text() : ""; }, function () { return ""; })
+    ]).then(function (t) {
+      S.items = parseCSV(t[0]).map(function (r) { return { item_id: r.item_id, clip: r.clip_file.split("/").pop(), word: r.word, before: r.before, after: r.after }; });
+      if (!S.items.length) throw new Error("empty");
+      parseCSV(t[1]).forEach(function (p) {
+        if (!p.item_id) return;
+        S.ans[p.item_id] = { onset: p.onset_s === "" ? null : parseFloat(p.onset_s), status: p.status || "", note: p.note || "", ts: p.timestamp || "" };
+      });
+      var open = firstOpen();
+      setSaveState("付けた位置は自動でファイルに保存されます", false);
+      ["screen-item", "screen-wave", "screen-judge", "screen-nav"].forEach(function (id) { $(id).hidden = false; });
+      if (open === -1 && nDone()) { S.idx = 0; showDone(); return; }
+      S.idx = Math.max(0, open);
+      if (nDone() === 0) $("guide").open = true;
+      render();
+    }).catch(function () { msg("onset_check/items.csv を読み込めませんでした。先に python3 scripts/16_onset_kit.py を実行してください。", true); });
+  }
+
+  // ── 音声とスペクトログラム ───────────────────────────
+  function getCtx() {
+    if (!S.ctx) { var AC = window.AudioContext || window.webkitAudioContext; S.ctx = new AC(); }
+    if (S.ctx.state === "suspended") S.ctx.resume();
+    return S.ctx;
+  }
+  function loadBuffer(it) {
+    var seq = ++S.reqSeq;
+    S.buf = null; S.bufId = null; S.spec = null; draw();
+    fetch(BASE + "clips/" + encodeURIComponent(it.clip), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+      .then(function (ab) { return new Promise(function (res, rej) { getCtx().decodeAudioData(ab, res, rej); }); })
+      .then(function (buf) {
+        if (seq !== S.reqSeq) return;
+        S.buf = buf; S.bufId = it.item_id; S.spec = null; draw();
+        if ($("autoplay").checked && S.gestured) play(0, buf.duration);
+      }, function () { if (seq === S.reqSeq) msg("音声を読み込めませんでした: " + it.clip, true); });
+  }
+  // 広帯域スペクトログラム（窓 5 ms のハン窓、0–8 kHz、プリエンファシス付き）。列は描画幅の画素ごと
+  function fft(re, im) {
+    var n = re.length, i, j, k, len, ang, wr, wi, tr, ti, ur, ui, cr, ci, t;
+    for (i = 1, j = 0; i < n; i++) { var bit = n >> 1; for (; j & bit; bit >>= 1) j ^= bit; j ^= bit;
+      if (i < j) { t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+    for (len = 2; len <= n; len <<= 1) {
+      ang = -2 * Math.PI / len; wr = Math.cos(ang); wi = Math.sin(ang);
+      for (i = 0; i < n; i += len) {
+        cr = 1; ci = 0;
+        for (k = 0; k < len / 2; k++) {
+          ur = re[i + k]; ui = im[i + k];
+          tr = re[i + k + len / 2] * cr - im[i + k + len / 2] * ci; ti = re[i + k + len / 2] * ci + im[i + k + len / 2] * cr;
+          re[i + k] = ur + tr; im[i + k] = ui + ti; re[i + k + len / 2] = ur - tr; im[i + k + len / 2] = ui - ti;
+          t = cr * wr - ci * wi; ci = cr * wi + ci * wr; cr = t;
+        }
+      }
+    }
+  }
+  function computeSpec(W, H) {
+    var x = S.buf.getChannelData(0), sr = S.buf.sampleRate, N = 512, win = Math.round(0.005 * sr);
+    var fmax = Math.min(8000, sr / 2), nb = Math.floor(fmax / (sr / N));
+    var hann = new Float32Array(win); for (var i = 0; i < win; i++) hann[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (win - 1));
+    var db = new Float32Array(W * nb), mx = -1e9, re = new Float32Array(N), im = new Float32Array(N);
+    for (var c = 0; c < W; c++) {
+      var mid = Math.round((c + 0.5) / W * x.length), s0 = mid - (win >> 1);
+      re.fill(0); im.fill(0);
+      for (var k = 0; k < win; k++) { var a = s0 + k, v = (a > 0 && a < x.length) ? x[a] - 0.97 * x[a - 1] : 0; re[k] = v * hann[k]; }
+      fft(re, im);
+      for (var b = 0; b < nb; b++) { var p = 10 * Math.log10(re[b] * re[b] + im[b] * im[b] + 1e-12); db[c * nb + b] = p; if (p > mx) mx = p; }
+    }
+    var lo = rgb(cssVar("--spec-lo")), hi = rgb(cssVar("--spec-hi")), img = new ImageData(W, H), d = img.data, RANGE = 60;
+    for (var y = 0; y < H; y++) {
+      var bin = Math.min(nb - 1, Math.floor((1 - (y + 0.5) / H) * nb));
+      for (c = 0; c < W; c++) {
+        var t = Math.max(0, Math.min(1, (db[c * nb + bin] - (mx - RANGE)) / RANGE)), o = (y * W + c) * 4;
+        d[o] = lo[0] + (hi[0] - lo[0]) * t; d[o + 1] = lo[1] + (hi[1] - lo[1]) * t; d[o + 2] = lo[2] + (hi[2] - lo[2]) * t; d[o + 3] = 255;
+      }
+    }
+    return { W: W, H: H, img: img };
+  }
+  function draw() {
+    var cv = $("cv"), dpr = window.devicePixelRatio || 1, cssW = cv.clientWidth || 800, cssH = 320;
+    var W = Math.round(cssW * dpr), H = Math.round(cssH * dpr);
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; S.spec = null; }
+    var g = cv.getContext("2d"), SH = Math.round(H * 0.68), WH = H - SH;
+    g.fillStyle = cssVar("--panel"); g.fillRect(0, 0, W, H);
+    if (!S.buf) { g.fillStyle = cssVar("--muted"); g.font = (13 * dpr) + "px sans-serif"; g.fillText("読み込み中…", 12 * dpr, 24 * dpr); return; }
+    if (!S.spec || S.spec.W !== W || S.spec.H !== SH) S.spec = computeSpec(W, SH);
+    g.putImageData(S.spec.img, 0, 0);
+    // 波形（画素列ごとの最小・最大）
+    var x = S.buf.getChannelData(0), per = x.length / W, amp = 0;
+    for (var i = 0; i < x.length; i++) amp = Math.max(amp, Math.abs(x[i]));
+    amp = amp || 1; g.strokeStyle = cssVar("--wave"); g.lineWidth = 1; g.beginPath();
+    for (var c = 0; c < W; c++) {
+      var a = Math.floor(c * per), b = Math.min(x.length, Math.floor((c + 1) * per)), lo = 0, hi = 0;
+      for (var j = a; j < b; j++) { if (x[j] < lo) lo = x[j]; if (x[j] > hi) hi = x[j]; }
+      var mid = SH + WH / 2; g.moveTo(c + 0.5, mid - hi / amp * (WH / 2 - 3)); g.lineTo(c + 0.5, mid - lo / amp * (WH / 2 - 3));
+    }
+    g.stroke();
+    g.strokeStyle = cssVar("--line"); g.beginPath(); g.moveTo(0, SH + 0.5); g.lineTo(W, SH + 0.5); g.stroke();
+    // 目盛り（100 ms ごと）
+    g.fillStyle = cssVar("--muted"); g.font = (11 * dpr) + "px " + cssVar("--font-mono");
+    for (var t = 0.1; t < S.buf.duration; t += 0.1) { var tx = t / S.buf.duration * W; g.fillRect(tx, H - 6 * dpr, 1, 6 * dpr); }
+    var dur = S.buf.duration, an = S.ans[cur().item_id];
+    if (S.hoverX != null) { g.strokeStyle = cssVar("--hover"); g.lineWidth = dpr; g.beginPath(); g.moveTo(S.hoverX * dpr, 0); g.lineTo(S.hoverX * dpr, H); g.stroke(); }
+    if (an && an.onset != null) {
+      var mx = an.onset / dur * W; g.strokeStyle = cssVar("--mark"); g.lineWidth = 2 * dpr;
+      g.beginPath(); g.moveTo(mx, 0); g.lineTo(mx, H); g.stroke();
+    }
+    if (S.src && S.ctx) {
+      var pt = S.playFrom + (S.ctx.currentTime - S.playStart);
+      if (pt <= S.playTo) { var px = pt / dur * W; g.strokeStyle = cssVar("--cursor"); g.lineWidth = dpr; g.beginPath(); g.moveTo(px, 0); g.lineTo(px, H); g.stroke(); }
+    }
+  }
+  function stopPlay() { if (S.src) { try { S.src.onended = null; S.src.stop(); } catch (e) { /* 停止済み */ } S.src = null; } }
+  function play(a, b) {
+    if (!S.buf || S.bufId !== cur().item_id) return;
+    stopPlay(); a = Math.max(0, a); b = Math.min(S.buf.duration, b); if (b <= a) return;
+    var src = getCtx().createBufferSource(); src.buffer = S.buf; src.connect(S.ctx.destination);
+    S.playStart = S.ctx.currentTime; S.playFrom = a; S.playTo = b; src.start(0, a, b - a); S.src = src;
+    src.onended = function () { if (S.src === src) { S.src = null; draw(); } };
+    (function tick() { if (S.src === src) { draw(); requestAnimationFrame(tick); } })();
+  }
+  function onsetOr0() { var a = S.ans[cur().item_id]; return a && a.onset != null ? a.onset : 0; }
+
+  // ── 表示と操作 ──────────────────────────────────────
+  function render() {
+    var it = cur(), a = S.ans[it.item_id] || {};
+    $("progress").textContent = (S.idx + 1) + " / " + S.items.length + "（済 " + nDone() + "）";
+    $("itemId").textContent = it.item_id;
+    $("barFill").style.width = (100 * nDone() / S.items.length) + "%";
+    var ctx = $("ctx"); ctx.textContent = "";
+    var s1 = document.createElement("span"); s1.className = "side"; s1.textContent = (it.before ? "… " + it.before + " " : "");
+    var w = document.createElement("b"); w.textContent = it.word;
+    var s2 = document.createElement("span"); s2.className = "side"; s2.textContent = (it.after ? " " + it.after + " …" : "");
+    ctx.appendChild(s1); ctx.appendChild(w); ctx.appendChild(s2);
+    document.querySelectorAll('input[name="st"]').forEach(function (r) { r.checked = r.value === a.status; });
+    $("note").value = a.note || "";
+    $("prev").disabled = S.idx === 0;
+    updateReadout(); loadBuffer(it);
+  }
+  function updateReadout() {
+    var a = S.ans[cur().item_id];
+    $("progress").textContent = (S.idx + 1) + " / " + S.items.length + "（済 " + nDone() + "）";
+    $("barFill").style.width = (100 * nDone() / S.items.length) + "%";
+    $("readout").textContent = a && a.onset != null ? "語頭: " + Math.round(a.onset * 1000) + " ms" : "語頭: 未設定";
+    $("navHint").textContent = isDone(a) ? "" : "語頭を付けるか「付けられない」を選ぶと次へ進めます";
+    $("next").disabled = !isDone(a);
+  }
+  function setOnset(t) {
+    if (!S.buf) return;
+    var a = curAns(); a.onset = Math.max(0, Math.min(S.buf.duration, t));
+    if (!a.status || a.status === "cannot") a.status = "marked";
+    document.querySelectorAll('input[name="st"]').forEach(function (r) { r.checked = r.value === a.status; });
+    updateReadout(); draw(); save();
+  }
+  function setStatus(v) {
+    var a = curAns(); if (v !== "cannot" && a.onset == null) { $("navHint").textContent = "先に語頭をクリックで付けてください"; document.querySelectorAll('input[name="st"]').forEach(function (r) { r.checked = r.value === a.status; }); return; }
+    a.status = v; document.querySelectorAll('input[name="st"]').forEach(function (r) { r.checked = r.value === v; });
+    updateReadout(); save();
+  }
+  function go(i) {
+    stopPlay();
+    if (i >= S.items.length) { var o = firstOpen(); if (o === -1) { showDone(); return; } i = o; }
+    S.idx = Math.max(0, i); $("screen-done").hidden = true;
+    ["screen-item", "screen-wave", "screen-judge", "screen-nav"].forEach(function (id) { $(id).hidden = false; });
+    render();
+  }
+  function showDone() {
+    ["screen-item", "screen-wave", "screen-judge", "screen-nav"].forEach(function (id) { $(id).hidden = true; });
+    var n = { marked: 0, unsure: 0, cannot: 0 };
+    S.items.forEach(function (it) { var a = S.ans[it.item_id]; if (a && n[a.status] != null) n[a.status]++; });
+    $("doneText").textContent = S.items.length + " 項目：付けた " + n.marked + "、自信なし " + n.unsure + "、付けられない " + n.cannot + "。";
+    $("screen-done").hidden = false;
+  }
+  function xToTime(clientX) { var r = $("cv").getBoundingClientRect(); return (clientX - r.left) / r.width * S.buf.duration; }
+  $("cv").addEventListener("pointerdown", function (e) { if (!S.buf) return; setOnset(xToTime(e.clientX)); });
+  $("cv").addEventListener("pointermove", function (e) { var r = $("cv").getBoundingClientRect(); S.hoverX = e.clientX - r.left; if (!S.src) draw(); });
+  $("cv").addEventListener("pointerleave", function () { S.hoverX = null; if (!S.src) draw(); });
+  $("pFrom").addEventListener("click", function () { play(onsetOr0(), S.buf ? S.buf.duration : 0); });
+  $("pBefore").addEventListener("click", function () { var t = onsetOr0(); play(t - 0.25, t); });
+  $("pAll").addEventListener("click", function () { play(0, S.buf ? S.buf.duration : 0); });
+  document.querySelectorAll('input[name="st"]').forEach(function (r) { r.addEventListener("change", function () { setStatus(r.value); }); });
+  $("note").addEventListener("input", function () { curAns().note = $("note").value; save(); });
+  $("prev").addEventListener("click", function () { go(S.idx - 1); });
+  $("next").addEventListener("click", function () { if (isDone(S.ans[cur().item_id])) go(S.idx + 1); });
+  $("backToFirst").addEventListener("click", function () { go(0); });
+  ["pointerdown", "keydown"].forEach(function (ev) { window.addEventListener(ev, function () { S.gestured = true; }, { capture: true }); });
+  window.addEventListener("resize", function () { if (S.buf) draw(); });
+  window.addEventListener("keydown", function (e) {
+    if (e.target && e.target.tagName === "TEXTAREA") return;
+    if ($("screen-wave").hidden) return;
+    var k = e.key;
+    if (k === " ") { e.preventDefault(); $("pFrom").click(); }
+    else if (k === "b" || k === "B") $("pBefore").click();
+    else if (k === "a" || k === "A") $("pAll").click();
+    else if (k === "ArrowLeft" || k === "ArrowRight") {
+      var a = S.ans[cur().item_id]; if (!a || a.onset == null) return;
+      e.preventDefault(); setOnset(a.onset + (k === "ArrowLeft" ? -1 : 1) * (e.shiftKey ? 0.001 : 0.005));
+    }
+    else if (k === "1") setStatus("marked"); else if (k === "2") setStatus("unsure"); else if (k === "3") setStatus("cannot");
+    else if (k === "Enter") { e.preventDefault(); $("next").click(); }
+  });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { S.spec = null; if (S.buf) draw(); });
+  start();
+})();
+</script>

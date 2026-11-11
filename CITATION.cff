@@ -7,6 +7,8 @@ authors:
     given-names: Takeshi
     affiliation: Mejiro University
 license: MIT
+version: 1.1.0
+date-released: "2026-11-11"
 repository-code: "https://github.com/labphonlab/buckeye-retraced-restarts"
 keywords:
   - self-repair

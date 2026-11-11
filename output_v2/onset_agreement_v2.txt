@@ -1,0 +1,24 @@
+=== 18_onset_apply_v2.py ===
+items 255, not yet judged 0
+shift = re-marked onset − corpus onset (ms); positive = re-marked later
+
+group          first  repeat_abut  repeat_gap
+items         32.000      191.000      32.000
+marked        27.000      165.000      26.000
+unsure         0.000       16.000       3.000
+cannot         5.000       10.000       3.000
+median_ms      2.568       10.477       1.160
+mean_ms        7.642       15.112      -5.161
+sd_ms         32.220       56.604      51.826
+q25_ms        -3.203       -5.186     -14.747
+q75_ms        22.915       37.258       8.283
+later_gt20     0.296        0.403       0.172
+earlier_gt20   0.148        0.160       0.241
+abs_le10       0.481        0.298       0.483
+
+log duration ratio (re-marked / corpus), mean: abutting R -0.094 (n 180), controls -0.004 (n 56)
+difference abutting R − controls: -0.089 [95% bootstrap CI -0.180, +0.000] (≈ -8.6%; abutting R − F effect in the corpus: log 0.110 ≈ +11.6%)
+excluded: re-marked onset at or after the corpus word end (within 10 ms): 1
+
+calibration (median shift of control items, gap R + F): 1.2 ms
+abutting R re-measured: 181, excluded as 'cannot': 10

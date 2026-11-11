@@ -1,0 +1,40 @@
+=== 15_phone_check_v2.py ===
+events with both tokens: 506 (abutting 188, gap 318)
+word edges coincide with phone edges: F 0.500, R 0.508
+
+Medians by abut (0 = gap, 1 = abutting); durations in ms, ratios R/F
+abut                  0        1
+n               318.000  188.000
+F_word          160.047  158.162
+R_word          148.000  169.905
+F_first          70.895   93.506
+R_first          70.000  113.363
+F_rest          110.210   93.786
+R_rest          100.997   80.043
+F_last           73.842   92.102
+R_last           68.014   82.165
+frag_dur        144.866  150.043
+frag_last        93.594   91.000
+frag_n            2.000    2.000
+same_seq          0.525    0.574
+extra_initial     0.009    0.016
+R_more_phones     0.053    0.080
+R_fewer_phones    0.085    0.037
+
+Geometric-mean R/F ratio by abut, and abut effect on log R/F (mixed model, random intercepts for speaker; word as variance component)
+  word  n=506  gap 0.966  abut 1.085  abut effect b=+0.116 SE=0.044 p=0.0084 (x1.123)
+  first n=506  gap 1.018  abut 1.205  abut effect b=+0.169 SE=0.052 p=0.0012 (x1.184)
+  rest  n=354  gap 0.929  abut 0.943  abut effect b=+0.015 SE=0.064 p=0.8174 (x1.015)
+  last  n=506  gap 0.931  abut 0.959  abut effect b=+0.029 SE=0.057 p=0.6133 (x1.029)
+
+Same comparison restricted to events whose F and R phone sequences are identical
+  word  n=275  gap 0.984  abut 1.075
+  first n=275  gap 1.034  abut 1.238
+  rest  n=182  gap 0.922  abut 0.889
+  last  n=275  gap 0.921  abut 0.957
+
+Multi-phone words only (F and R both > 1 phone): geometric-mean R/F ratio
+  word  n=354  gap 0.965  abut 1.086
+  first n=354  gap 1.043  abut 1.307
+  rest  n=354  gap 0.929  abut 0.943
+  last  n=354  gap 0.923  abut 0.935

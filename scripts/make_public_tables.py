@@ -9,6 +9,11 @@ index in that recording's `.words` file (`words_idx`). Word types are replaced b
 stable codes (`w001` ...). `restore_from_corpus.py` puts the labels and times back
 for anyone with a licensed copy of the corpus.
 
+The tables with hand-re-marked repetition onsets (`tokens_onsetfix_v2.csv`,
+`tokens_onsetfix_cal_v2.csv`) have the same rows as `tokens.csv` and are coded the same way.
+In the vowel table (`formants_v2.csv`) the vowel label is replaced by a code (`v01` ...) and a
+`diphthong` flag, which is all the models need.
+
 Usage:  python3 make_public_tables.py --raw ../raw --src ../output_v2 --out ../data
 """
 import argparse
@@ -57,6 +62,23 @@ def main() -> None:
     os.makedirs(a.out, exist_ok=True)
     tok.to_csv(os.path.join(a.out, "tokens.csv"), index=False, float_format="%.17g")
     ev.to_csv(os.path.join(a.out, "events.csv"), index=False, float_format="%.17g")
+
+    for name in ["tokens_onsetfix_v2.csv", "tokens_onsetfix_cal_v2.csv"]:
+        fp = os.path.join(a.src, name)
+        if not os.path.isfile(fp):
+            continue
+        fx = pd.read_csv(fp)
+        assert len(fx) == len(tok) and (fx.basename.to_numpy() == tok.basename.to_numpy()).all()
+        fx.insert(0, "words_idx", idx)
+        fx["word"] = fx["word"].map(codes)
+        fx.drop(columns=["start", "end"]).to_csv(os.path.join(a.out, name), index=False, float_format="%.17g")
+    fp = os.path.join(a.src, "formants_v2.csv")
+    if os.path.isfile(fp):
+        fm = pd.read_csv(fp)
+        vcodes = {v: f"v{i + 1:02d}" for i, v in enumerate(sorted(fm.vowel.dropna().unique()))}
+        fm["diphthong"] = fm.vowel.isin(["ay", "aw", "oy", "ey", "ow"]).astype(int)
+        fm["vowel"] = fm.vowel.map(vcodes)
+        fm.to_csv(os.path.join(a.out, "formants_v2.csv"), index=False, float_format="%.17g")
     print(f"tokens: {len(tok)}  events: {len(ev)}  word codes: {len(codes)}")
 
 

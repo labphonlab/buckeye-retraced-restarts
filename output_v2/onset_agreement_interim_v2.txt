@@ -1,0 +1,23 @@
+=== 18_onset_apply_v2.py (interim, D24) ===
+items 255, judged 120, not yet judged 135
+shift = re-marked onset − corpus onset (ms); positive = re-marked later
+
+group          first  repeat_abut  repeat_gap
+items         16.000       87.000      17.000
+marked        13.000       76.000      14.000
+unsure         0.000        7.000       1.000
+cannot         3.000        4.000       2.000
+median_ms      3.305       17.931       2.496
+mean_ms        5.899       16.894       4.910
+sd_ms         32.039       54.979      60.195
+q25_ms        -2.100       -5.427       0.167
+q75_ms        20.017       41.961      28.057
+later_gt20     0.308        0.482       0.267
+earlier_gt20   0.154        0.145       0.133
+abs_le10       0.538        0.229       0.533
+
+'cannot' by group: {'first': 3, 'repeat_abut': 4, 'repeat_gap': 2}
+log duration ratio (re-marked / corpus), mean: abutting R -0.122 (n 83), controls -0.044 (n 28)
+difference abutting R − controls: -0.078 [95% bootstrap CI -0.221, +0.049] (≈ -7.5%; abutting R − F effect in the corpus: log 0.110 ≈ +11.6%)
+
+decision: CONTINUE: 95% CI not within ±0.05; mark all remaining items.

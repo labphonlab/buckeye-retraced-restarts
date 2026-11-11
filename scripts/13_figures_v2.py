@@ -20,10 +20,13 @@ OUT = os.path.join(ROOT, "output_v2")
 INK, MUTED, GRID = "#1a1a1a", "#6b6b6b", "#d9d9d9"
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10, "axes.edgecolor": MUTED,
                      "axes.labelcolor": INK, "xtick.color": INK, "ytick.color": INK,
-                     "axes.spines.top": False, "axes.spines.right": False})
+                     "axes.spines.top": False, "axes.spines.right": False,
+                     "pdf.fonttype": 42})  # 投稿用 PDF に TrueType フォントを埋め込む
 
 w = pd.read_csv(os.path.join(OUT, "pairs_wide_v2.csv"))
 est = pd.read_csv(os.path.join(OUT, "estimates_v2.csv")).set_index("label")
+# 流暢ベースラインとの比較は事象の切片を入れたモデル（12b_baseline_event_v2.R、D17）
+est = pd.concat([est, pd.read_csv(os.path.join(OUT, "baseline_event_v2.csv")).set_index("label")])
 tok = pd.read_csv(os.path.join(OUT, "tokens.csv"))
 
 # ── Figure 1 ─────────────────────────────────────────────────────
@@ -44,6 +47,7 @@ for ax, (x, y, lab, title) in zip(axes, panels):
     ax.text(0.03, 0.97, f"n = {len(d)} pairs\nr = {r:.2f}", transform=ax.transAxes,
             va="top", fontsize=9, color=INK)
 fig.savefig(os.path.join(OUT, "Figure1_pairs.png"), dpi=300)
+fig.savefig(os.path.join(OUT, "Figure1_pairs.pdf"))  # 投稿用のベクター版
 plt.close(fig)
 
 # ── Figure 2 ─────────────────────────────────────────────────────
@@ -52,11 +56,11 @@ def pct(x):
 
 rows = [  # (panel, y-label, estimate label, transform, CI columns)
     ("dur", "R − F", "DUR repeat-first (all tokens)", "90"),
-    ("dur", "F − fluent", "DUR vs fluent: conditionfirst", "95"),
-    ("dur", "R − fluent", "DUR vs fluent: conditionrepeat", "95"),
+    ("dur", "F − fluent", "EV DUR vs fluent: conditionfirst", "95"),
+    ("dur", "R − fluent", "EV DUR vs fluent: conditionrepeat", "95"),
     ("int", "R − F", "INT repeat-first (all tokens)", "90"),
-    ("int", "F − fluent", "INT vs fluent: conditionfirst", "95"),
-    ("int", "R − fluent", "INT vs fluent: conditionrepeat", "95"),
+    ("int", "F − fluent", "EV INT vs fluent: conditionfirst", "95"),
+    ("int", "R − fluent", "EV INT vs fluent: conditionrepeat", "95"),
 ]
 fig, axes = plt.subplots(1, 2, figsize=(7.2, 2.8), constrained_layout=True, sharey=True)
 spec = {"dur": ("Difference in word duration (%)", pct, 10.0, "A. Duration"),
@@ -81,6 +85,7 @@ for ax, key in zip(axes, ["dur", "int"]):
     ax.set_ylim(-0.6, len(sub) - 0.2)
     ax.grid(axis="x", color=GRID, lw=0.5)
 fig.savefig(os.path.join(OUT, "Figure2_estimates.png"), dpi=300)
+fig.savefig(os.path.join(OUT, "Figure2_estimates.pdf"))  # 投稿用のベクター版
 plt.close(fig)
 
 # ── Figure S1 ────────────────────────────────────────────────────
@@ -99,5 +104,6 @@ ax.set_xticks([1, 2, 3]); ax.set_xticklabels([f"{l}\n(n = {len(d)})" for (_, l),
 ax.set_ylabel("F0 availability\n(proportion of voiced frames)")
 ax.grid(axis="y", color=GRID, lw=0.5)
 fig.savefig(os.path.join(OUT, "FigureS1_f0avail.png"), dpi=300)
+fig.savefig(os.path.join(OUT, "FigureS1_f0avail.pdf"))  # 投稿用のベクター版
 plt.close(fig)
-print("Saved Figure1_pairs.png, Figure2_estimates.png, FigureS1_f0avail.png")
+print("Saved Figure1_pairs, Figure2_estimates, FigureS1_f0avail (.png and .pdf)")

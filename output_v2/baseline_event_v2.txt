@@ -1,0 +1,133 @@
+=== 12b_baseline_event_v2.R ===
+Tokens: 8016 528 514  event levels: 8552 
+
+--- DUR fluent/first/repeat + event ---
+log_dur ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 + condition | word) + (1 | event_id)
+<environment: 0x8833677a8>
+                Estimate Std. Error     df t value Pr(>|t|)
+(Intercept)      -1.9039     0.0378  124.1  -50.38 1.83e-84
+conditionfirst    0.1018     0.0199   41.9    5.11 7.41e-06
+conditionrepeat   0.1052     0.0216   53.8    4.88 9.85e-06
+log_freq_c       -0.3110     0.0319  108.5   -9.76 1.60e-16
+rate_syl_c       -0.0609     0.0045 6151.3  -13.55 3.08e-41
+utt_pos1          0.3385     0.0391 8870.2    8.66 5.48e-18
+prev_pause1       0.0551     0.0159 8820.6    3.47 5.25e-04
+ Groups   Name            Std.Dev. Corr          
+ event_id (Intercept)     0.146994               
+ word     (Intercept)     0.274464               
+          conditionfirst  0.057193 -0.684        
+          conditionrepeat 0.090634 -0.908  0.679 
+ speaker  (Intercept)     0.063241               
+ Residual                 0.349708               
+singular: FALSE 
+
+--- INT fluent/first/repeat + event ---
+int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 | word) + (1 | event_id)
+<environment: 0x881f7b498>
+                Estimate Std. Error     df t value Pr(>|t|)
+(Intercept)      -0.3487     0.2638   67.2  -1.322 1.91e-01
+conditionfirst    1.2429     0.2492 8761.5   4.988 6.22e-07
+conditionrepeat   0.8562     0.2504 8871.7   3.419 6.32e-04
+log_freq_c       -1.0121     0.3254  163.8  -3.110 2.21e-03
+rate_syl_c       -0.0573     0.0611 1184.0  -0.937 3.49e-01
+utt_pos1         -1.9083     0.5157 5672.9  -3.700 2.17e-04
+prev_pause1      -0.1433     0.2073 4731.5  -0.691 4.89e-01
+ Groups   Name        Std.Dev.
+ event_id (Intercept) 4.64877 
+ word     (Intercept) 1.69470 
+ speaker  (Intercept) 0.28543 
+ Residual             2.87968 
+singular: FALSE 
+
+--- INT fluent/first/repeat + log duration + event ---
+int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    log_dur_c + (1 | speaker) + (1 | word) + (1 | event_id)
+<environment: 0x8811ae5f0>
+                Estimate Std. Error     df t value Pr(>|t|)
+(Intercept)      -0.3692     0.2661   67.2  -1.387 1.70e-01
+conditionfirst    1.2003     0.2497 8770.9   4.807 1.56e-06
+conditionrepeat   0.8068     0.2511 8882.8   3.212 1.32e-03
+log_freq_c       -0.8921     0.3306  171.0  -2.699 7.66e-03
+rate_syl_c       -0.0367     0.0618 1379.9  -0.594 5.52e-01
+utt_pos1         -2.0086     0.5173 5604.4  -3.883 1.04e-04
+prev_pause1      -0.1665     0.2075 4756.2  -0.802 4.22e-01
+log_dur_c         0.3483     0.1418 7005.9   2.457 1.40e-02
+ Groups   Name        Std.Dev.
+ event_id (Intercept) 4.64541 
+ word     (Intercept) 1.70957 
+ speaker  (Intercept) 0.29425 
+ Residual             2.88066 
+singular: FALSE 
+
+--- F0 availability fluent/first/repeat + event ---
+                Estimate Std. Error z value Pr(>|z|)
+(Intercept)       1.2297     0.1657   7.420 1.17e-13
+conditionfirst    0.0220     0.0648   0.340 7.34e-01
+conditionrepeat  -0.2199     0.0638  -3.449 5.63e-04
+log_freq_c        0.0900     0.1214   0.742 4.58e-01
+rate_syl_c        0.0413     0.0174   2.373 1.76e-02
+utt_pos1         -0.1833     0.1348  -1.360 1.74e-01
+prev_pause1      -0.5201     0.0565  -9.208 3.31e-20
+attr(,"ddf")
+[1] "asymptotic"
+
+Conditional model:
+ Groups   Name        Std.Dev.
+ speaker  (Intercept) 0.66705 
+ word     (Intercept) 0.90275 
+ event_id (Intercept) 0.42354 
+
+--- SENSITIVITY: DUR, random intercepts only + event ---
+log_dur ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 | word) + (1 | event_id)
+                Estimate Std. Error   df t value Pr(>|t|)
+(Intercept)      -1.9211     0.0382  120  -50.33 9.51e-83
+conditionfirst    0.1264     0.0174 8897    7.26 4.17e-13
+conditionrepeat   0.1461     0.0176 8931    8.30 1.21e-16
+log_freq_c       -0.3230     0.0357  172   -9.05 3.06e-16
+rate_syl_c       -0.0606     0.0045 6143  -13.45 1.14e-40
+utt_pos1          0.3393     0.0391 8912    8.68 4.75e-18
+prev_pause1       0.0550     0.0159 8861    3.46 5.36e-04
+ Groups   Name        Std.Dev.
+ event_id (Intercept) 0.148762
+ word     (Intercept) 0.264575
+ speaker  (Intercept) 0.063195
+ Residual             0.349583
+singular: FALSE 
+
+--- SENSITIVITY: INT, random intercepts only + event ---
+int_c ~ condition + log_freq_c + rate_syl_c + utt_pos + prev_pause + 
+    (1 | speaker) + (1 | word) + (1 | event_id)
+                Estimate Std. Error     df t value Pr(>|t|)
+(Intercept)      -0.3487     0.2638   67.2  -1.322 1.91e-01
+conditionfirst    1.2429     0.2492 8761.5   4.988 6.22e-07
+conditionrepeat   0.8562     0.2504 8871.7   3.419 6.32e-04
+log_freq_c       -1.0121     0.3254  163.8  -3.110 2.21e-03
+rate_syl_c       -0.0573     0.0611 1184.0  -0.937 3.49e-01
+utt_pos1         -1.9083     0.5157 5672.9  -3.700 2.17e-04
+prev_pause1      -0.1433     0.2073 4731.5  -0.691 4.89e-01
+ Groups   Name        Std.Dev.
+ event_id (Intercept) 4.64877 
+ word     (Intercept) 1.69470 
+ speaker  (Intercept) 0.28543 
+ Residual             2.87968 
+singular: FALSE 
+
+EV DUR vs fluent (intercepts only): conditionfirst conditionfirst     b=  0.126 SE= 0.017 df=8897.2 t=  7.26 p=0.000 95%CI[ 0.092, 0.161] 90%CI[ 0.098, 0.155] TOST p=-
+EV INT vs fluent (intercepts only): conditionfirst conditionfirst     b=  1.243 SE= 0.249 df=8761.5 t=  4.99 p=0.000 95%CI[ 0.754, 1.731] 90%CI[ 0.833, 1.653] TOST p=-
+EV DUR vs fluent (intercepts only): conditionrepeat conditionrepeat    b=  0.146 SE= 0.018 df=8930.9 t=  8.30 p=0.000 95%CI[ 0.112, 0.181] 90%CI[ 0.117, 0.175] TOST p=-
+EV INT vs fluent (intercepts only): conditionrepeat conditionrepeat    b=  0.856 SE= 0.250 df=8871.7 t=  3.42 p=0.001 95%CI[ 0.365, 1.347] 90%CI[ 0.444, 1.268] TOST p=-
+EV DUR vs fluent: conditionfirst                 conditionfirst     b=  0.102 SE= 0.020 df=  41.9 t=  5.11 p=0.000 95%CI[ 0.062, 0.142] 90%CI[ 0.068, 0.135] TOST p=-
+EV INT vs fluent: conditionfirst                 conditionfirst     b=  1.243 SE= 0.249 df=8761.5 t=  4.99 p=0.000 95%CI[ 0.754, 1.731] 90%CI[ 0.833, 1.653] TOST p=-
+EV INT(+dur) vs fluent: conditionfirst           conditionfirst     b=  1.200 SE= 0.250 df=8770.9 t=  4.81 p=0.000 95%CI[ 0.711, 1.690] 90%CI[ 0.790, 1.611] TOST p=-
+EV DUR vs fluent: conditionrepeat                conditionrepeat    b=  0.105 SE= 0.022 df=  53.8 t=  4.88 p=0.000 95%CI[ 0.062, 0.148] 90%CI[ 0.069, 0.141] TOST p=-
+EV INT vs fluent: conditionrepeat                conditionrepeat    b=  0.856 SE= 0.250 df=8871.7 t=  3.42 p=0.001 95%CI[ 0.365, 1.347] 90%CI[ 0.444, 1.268] TOST p=-
+EV INT(+dur) vs fluent: conditionrepeat          conditionrepeat    b=  0.807 SE= 0.251 df=8882.8 t=  3.21 p=0.001 95%CI[ 0.314, 1.299] 90%CI[ 0.394, 1.220] TOST p=-
+
+--- R - F within the three-condition models ---
+     Estimate Std. Error       df   t value       lower      upper  Pr(>|t|)
+1 0.003365944 0.02462228 74.66851 0.1367032 -0.04568772 0.05241961 0.8916333
+    Estimate Std. Error       df   t value      lower       upper   Pr(>|t|)
+1 -0.3867174  0.1809039 544.6841 -2.137696 -0.7420722 -0.03136274 0.03298597
