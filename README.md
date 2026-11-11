@@ -1,5 +1,9 @@
 # Retraced same-word restarts in the Buckeye Corpus: analysis code and measurements
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24139970.svg)](https://doi.org/10.5281/zenodo.24139970)
+
+Archived on Zenodo: version 1.1.0, https://doi.org/10.5281/zenodo.24139970 (all versions: https://doi.org/10.5281/zenodo.24139969).
+
 Code and token-level measurements for:
 
 > Ishihara, T. *Same plan, same word? Duration and intensity of retraced same-word restarts in spontaneous American English.* Manuscript under review at *Speech Communication* (SPECOM-D-26-00036, revision 1).
@@ -80,7 +84,9 @@ The random-effects structure of each model is selected automatically by `fit_max
 
 ## Citation
 
-Please cite the article (see `CITATION.cff`) and the corpus:
+Please cite the article and this archive (see `CITATION.cff`), and the corpus:
+
+- Ishihara, T. (2026). *Retraced same-word restarts in the Buckeye Corpus: Analysis code and measurements* (Version 1.1.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24139970
 
 - Pitt, M. A., Dilley, L., Johnson, K., Kiesling, S., Raymond, W., Hume, E., & Fosler-Lussier, E. (2007). *Buckeye Corpus of Conversational Speech* (2nd release). Columbus, OH: Department of Psychology, Ohio State University (Distributor).
 - Pitt, M. A., Johnson, K., Hume, E., Kiesling, S., & Raymond, W. (2005). The Buckeye corpus of conversational speech: Labeling conventions and a test of transcriber reliability. *Speech Communication, 45*(1), 89–95.
